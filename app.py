@@ -1,4 +1,5 @@
 import code
+import re
 from flask import Flask
 from flask import request
 app = Flask(__name__)
@@ -7,17 +8,16 @@ app = Flask(__name__)
 def getTwilioMessage():
     rawSms = request.args.getlist('Body')
     sms = rawSms[0].encode("utf-8").lower()
+    modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
 
-    for eachLetter in sms:
-        print eachLetter + " " # look up address value for eachLetter key and light up
-        lightUpLetter(eachLetter)
-
+    for eachLetter in modifiedSms:
+        print lightUpLetter(eachLetter) # look up address value for eachLetter key and light up
     return ""
 
     # code.interact(local=dict(globals(), **locals()))
 
-// Map a lower case char to an LED
-def lightUpLetter(letter) {
+# Map a lower case char to an LED
+def lightUpLetter(letter): 
   letterToLEDAddress = {
     'a': 1,
     'b': 2,
@@ -45,9 +45,10 @@ def lightUpLetter(letter) {
     'x': 24,
     'y': 25,
     'z': 26,
+    ' ': 27,
     }
   return letterToLEDAddress[letter]
-}
+
 
 if __name__ == "__main__":
     app.run()
