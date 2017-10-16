@@ -1,8 +1,4 @@
-import code
-import re
-import random
-import time
-import string
+import code, string, time, random, re
 from flask import Flask
 from flask import request
 from neopixel import *
@@ -16,7 +12,7 @@ LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
-#Predefined Colors and Masks
+#Predefined Colors
 OFF = Color(0,0,0)
 WHITE = Color(255,255,255)
 RED = Color(255,0,0)
@@ -29,7 +25,6 @@ TURQUOISE = Color(64,224,208)
 RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
 # Other vars
-ALPHABET = '*******abcdefghijklm********zyxwvutsrqpon*********'  #alphabet that will be used
 LIGHTSHIFT = 0  #shift the lights down the strand to the other end 
 FLICKERLOOP = 3  #number of loops to flicker
 
@@ -46,29 +41,29 @@ def getTwilioMessage():
     sms = rawSms[0].encode("utf-8").lower()
     modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
 
-    colorLen = len(COLORS)
-
     # look up address value for eachLetter key and light up
     for eachLetter in modifiedSms:
-      result = lightUpLetter(eachLetter, colorLen)
-      strip.setPixelColor(result[0], result[1])
+      result = mapLetterToLed(eachLetter, len(COLORS))
+      position = result[0]
+      color = result[1]
+      strip.setPixelColor(position, color)
       strip.show()
       time.sleep(2)
-      strip.setPixelColor(led+LIGHTSHIFT, OFF)
+      strip.setPixelColor(position, OFF)
+      strip.show()
       time.sleep(1)
 
-
-    for led in range(len(ALPHABET)):
-      strip.setPixelColor(led+LIGHTSHIFT, OFF)
+    for led in range(len(26)): #TODO:remove hardcode
+      strip.setPixelColor(led, OFF)
     strip.show()
 
 # Map a lower case char to an LED
-def lightUpLetter(letter, colorLen): 
-  letterToLEDAddress = {
+def mapLetterToLed(letter, colorLen): 
+    letterPosColor = {
     'a': (0+LIGHTSHIFT, COLORS[0%colorLen]),
     'b': (1+LIGHTSHIFT, COLORS[1%colorLen]),
     'c': (2+LIGHTSHIFT, COLORS[2%colorLen]),
-    'd': (3+LIGHTSHIFT, COLORS[3%colorlen]),
+    'd': (3+LIGHTSHIFT, COLORS[3%colorLen]),
     'e': (4+LIGHTSHIFT, COLORS[4%colorLen]),
     'f': (5+LIGHTSHIFT, COLORS[5%colorLen]),
     'g': (6+LIGHTSHIFT, COLORS[6%colorLen]),
@@ -93,7 +88,7 @@ def lightUpLetter(letter, colorLen):
     'z': (25+LIGHTSHIFT, COLORS[25%colorLen]),
     ' ': (26+LIGHTSHIFT, COLORS[26%colorLen]),
     }
-  return letterToLEDAddress[letter]
+    return letterPosColor[letter]
 
 
 if __name__ == "__main__":
