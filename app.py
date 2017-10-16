@@ -41,9 +41,9 @@ COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
 
 # Flash strip twice when message received
 def receiveFlash():
-    for i in (2):  
+    for i in range(2):  
       for i in range(strip.numPixels()):
-        strip.setPixelColor(i, RANDOM)
+        strip.setPixelColor(i, Color(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
       strip.show()
       time.sleep(.5)
       for i in range(strip.numPixels()):
