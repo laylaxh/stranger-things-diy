@@ -4,6 +4,9 @@ from flask import request
 from neopixel import *
 app = Flask(__name__)
 
+# Start random seed
+random.seed()
+
 # LED strip configuration:
 TEST_COUNT     = 0       # test comment
 LED_COUNT      = 50      # Number of LED pixels.
@@ -36,11 +39,37 @@ COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
           ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
           YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
 
+# Flash strip twice when message received
+def receiveFlash():
+    for i in (2):  
+      for i in range(strip.numPixels()):
+        strip.setPixelColor(i, RANDOM)
+      strip.show()
+      time.sleep(.5)
+      for i in range(strip.numPixels()):
+        strip.setPixelColor(i, OFF)
+      strip.show()
+      time.sleep(.5)
+
+      # another way to do it by having the lights randomly blink off
+
+      # s = list(range(len(26)))
+      # random.shuffle(s)
+
+      # #first, kill all lights in a semi-random fashion
+      # for led in range(len(ALPHABET)):
+      #   strip.setPixelColor(s[led]+LIGHTSHIFT, OFF)
+      #   strip.show()
+      #   time.sleep(random.randint(10,80)/1000.0)
+
 @app.route("/")
 def getTwilioMessage():
     rawSms = request.args.getlist('Body')
     sms = rawSms[0].encode("utf-8").lower()
     modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
+
+    # Flash twice on receipt
+    receiveFlash()
 
     # look up address value for eachLetter key and light up
     for eachLetter in modifiedSms:
@@ -49,10 +78,10 @@ def getTwilioMessage():
       color = result[1]
       strip.setPixelColor(position, color)
       strip.show()
-      time.sleep(2)
+      time.sleep(1)
       strip.setPixelColor(position, OFF)
       strip.show()
-      time.sleep(1)
+      time.sleep(.5)
 
     for led in range(len(26)): #TODO:remove hardcode
       strip.setPixelColor(led, OFF)
