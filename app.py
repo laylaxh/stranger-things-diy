@@ -71,6 +71,9 @@ def getTwilioMessage():
     # Flash twice on receipt
     receiveFlash()
 
+    # Just For Fun - take out.
+    theaterChaseRainbow(strip)
+
     # look up address value for eachLetter key and light up
     for eachLetter in modifiedSms:
       result = mapLetterToLed(eachLetter, len(COLORS))
