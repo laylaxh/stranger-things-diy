@@ -1,6 +1,8 @@
 import code
 import re
 import random
+import time
+import string
 from flask import Flask
 from flask import request
 from neopixel import *
@@ -45,45 +47,51 @@ def getTwilioMessage():
     modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
 
     colorLen = len(COLORS)
-    # #Initialize all LEDs
-    # for i in range(len(ALPHABET)):
-    #   strip.setPixelColor(i+LIGHTSHIFT, COLORS[i%colorLen])
-    # strip.show()
+
+    # look up address value for eachLetter key and light up
     for eachLetter in modifiedSms:
-      lightUpLetter(eachLetter) # look up address value for eachLetter key and light up
+      result = lightUpLetter(eachLetter, colorLen)
+      strip.setPixelColor(result[0], result[1])
+      strip.show()
+      time.sleep(2)
+      strip.setPixelColor(led+LIGHTSHIFT, OFF)
+      time.sleep(1)
+
+
+    for led in range(len(ALPHABET)):
+      strip.setPixelColor(led+LIGHTSHIFT, OFF)
     strip.show()
-    # code.interact(local=dict(globals(), **locals()))
 
 # Map a lower case char to an LED
-def lightUpLetter(letter): 
+def lightUpLetter(letter, colorLen): 
   letterToLEDAddress = {
-    'a': strip.setPixelColor(0+LIGHTSHIFT, COLORS[0%colorLen]),
-    'b': strip.setPixelColor(1+LIGHTSHIFT, COLORS[1%colorLen]),
-    'c': strip.setPixelColor(2+LIGHTSHIFT, COLORS[2%colorLen]),
-    # 'd': 4,
-    # 'e': 5,
-    # 'f': 6,
-    # 'g': 7,
-    # 'h': 8,
-    # 'i': 9,
-    # 'j': 10,
-    # 'k': 11,
-    # 'l': 12,
-    # 'm': 13,
-    # 'n': 14,
-    # 'o': 15,
-    # 'p': 16,
-    # 'q': 17,
-    # 'r': 18,
-    # 's': 19,
-    # 't': 20,
-    # 'u': 21,
-    # 'v': 22,
-    # 'w': 23,
-    # 'x': 24,
-    # 'y': 25,
-    # 'z': 26,
-    # ' ': 27,
+    'a': (0+LIGHTSHIFT, COLORS[0%colorLen]),
+    'b': (1+LIGHTSHIFT, COLORS[1%colorLen]),
+    'c': (2+LIGHTSHIFT, COLORS[2%colorLen]),
+    'd': (3+LIGHTSHIFT, COLORS[3%colorlen]),
+    'e': (4+LIGHTSHIFT, COLORS[4%colorLen]),
+    'f': (5+LIGHTSHIFT, COLORS[5%colorLen]),
+    'g': (6+LIGHTSHIFT, COLORS[6%colorLen]),
+    'h': (7+LIGHTSHIFT, COLORS[7%colorLen]),
+    'i': (8+LIGHTSHIFT, COLORS[8%colorLen]),
+    'j': (9+LIGHTSHIFT, COLORS[9%colorLen]),
+    'k': (10+LIGHTSHIFT, COLORS[10%colorLen]),
+    'l': (11+LIGHTSHIFT, COLORS[11%colorLen]),
+    'm': (12+LIGHTSHIFT, COLORS[12%colorLen]),
+    'n': (13+LIGHTSHIFT, COLORS[13%colorLen]),
+    'o': (14+LIGHTSHIFT, COLORS[14%colorLen]),
+    'p': (15+LIGHTSHIFT, COLORS[15%colorLen]),
+    'q': (16+LIGHTSHIFT, COLORS[16%colorLen]),
+    'r': (17+LIGHTSHIFT, COLORS[17%colorLen]),
+    's': (18+LIGHTSHIFT, COLORS[18%colorLen]),
+    't': (19+LIGHTSHIFT, COLORS[19%colorLen]),
+    'u': (20+LIGHTSHIFT, COLORS[20%colorLen]),
+    'v': (21+LIGHTSHIFT, COLORS[21%colorLen]),
+    'w': (22+LIGHTSHIFT, COLORS[22%colorLen]),
+    'x': (23+LIGHTSHIFT, COLORS[23%colorLen]),
+    'y': (24+LIGHTSHIFT, COLORS[24%colorLen]),
+    'z': (25+LIGHTSHIFT, COLORS[25%colorLen]),
+    ' ': (26+LIGHTSHIFT, COLORS[26%colorLen]),
     }
   return letterToLEDAddress[letter]
 
