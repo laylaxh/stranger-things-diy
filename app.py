@@ -1,8 +1,42 @@
 import code
 import re
+import random
 from flask import Flask
 from flask import request
+from neopixel import *
 app = Flask(__name__)
+
+# LED strip configuration:
+LED_COUNT      = 50      # Number of LED pixels.
+LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
+LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
+LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
+LED_BRIGHTNESS = 255     # Set to 0 for darkest and 255 for brightest
+LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
+
+#Predefined Colors and Masks
+OFF = Color(0,0,0)
+WHITE = Color(255,255,255)
+RED = Color(255,0,0)
+GREEN = Color(0,255,0)
+BLUE = Color(0,0,255)
+PURPLE = Color(128,0,128)
+YELLOW = Color(255,255,0)
+ORANGE = Color(255,50,0)
+TURQUOISE = Color(64,224,208)
+RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
+
+# Other vars
+ALPHABET = '*******abcdefghijklm********zyxwvutsrqpon*********'  #alphabet that will be used
+LIGHTSHIFT = 0  #shift the lights down the strand to the other end 
+FLICKERLOOP = 3  #number of loops to flicker
+
+#list of colors, tried to match the show as close as possible
+COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
+          YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE, 
+          ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
 
 @app.route("/")
 def getTwilioMessage():
@@ -10,9 +44,14 @@ def getTwilioMessage():
     sms = rawSms[0].encode("utf-8").lower()
     modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
 
-    for eachLetter in modifiedSms:
-        print lightUpLetter(eachLetter) # look up address value for eachLetter key and light up
-    return ""
+    colorLen = len(COLORS)
+    #Initialize all LEDs
+    for i in range(len(ALPHABET)):
+      strip.setPixelColor(i+LIGHTSHIFT, COLORS[i%colorLen])
+    strip.show()
+    # for eachLetter in modifiedSms:
+    #     print lightUpLetter(eachLetter) # look up address value for eachLetter key and light up
+    # return ""
 
     # code.interact(local=dict(globals(), **locals()))
 
@@ -51,4 +90,8 @@ def lightUpLetter(letter):
 
 
 if __name__ == "__main__":
-    app.run()
+    # Create NeoPixel object with appropriate configuration.
+    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+    # Intialize the library (must be called once before other functions).
+    strip.begin()
+    # app.run()
