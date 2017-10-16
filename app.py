@@ -5,6 +5,7 @@ from neopixel import *
 app = Flask(__name__)
 
 # LED strip configuration:
+TEST_COUNT     = 0       # test comment
 LED_COUNT      = 50      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
