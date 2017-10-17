@@ -39,28 +39,22 @@ COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
           ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
           YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
 
-# Flash strip twice when message received
+# Standard process for when message received - TODO: all colors disappear in random order, then double flash.
 def receiveFlash():
-    for i in range(2):  
+      # All LEDs turn on in one of the predefind COLORS
       for i in range(strip.numPixels()):
-        strip.setPixelColor(i, Color(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-      strip.show()
-      time.sleep(.5)
-      for i in range(strip.numPixels()):
-        strip.setPixelColor(i, OFF)
+        strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
       strip.show()
       time.sleep(.5)
 
-      # another way to do it by having the lights randomly blink off
+      # Kill lights off randomly
+      s = list(range(50)) # TODO: Make this 50-dynamicly the total # of LEDs
+      random.shuffle(s)
 
-      # s = list(range(len(26)))
-      # random.shuffle(s)
-
-      # #first, kill all lights in a semi-random fashion
-      # for led in range(len(ALPHABET)):
-      #   strip.setPixelColor(s[led]+LIGHTSHIFT, OFF)
-      #   strip.show()
-      #   time.sleep(random.randint(10,80)/1000.0)
+      for led in range(50):
+        strip.setPixelColor(s[led], OFF)
+        strip.show()
+        time.sleep(random.randint(1,30)/1000.0)
 
 @app.route("/")
 def getTwilioMessage():
@@ -70,9 +64,6 @@ def getTwilioMessage():
 
     # Flash twice on receipt
     receiveFlash()
-
-    # Just For Fun - take out.
-    theaterChaseRainbow(strip)
 
     # look up address value for eachLetter key and light up
     for eachLetter in modifiedSms:
@@ -86,7 +77,7 @@ def getTwilioMessage():
       strip.show()
       time.sleep(.5)
 
-    for led in range(len(26)): #TODO:remove hardcode
+    for led in range(26): #TODO:remove hardcode
       strip.setPixelColor(led, OFF)
     strip.show()
 
