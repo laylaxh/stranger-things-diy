@@ -29,15 +29,15 @@ TURQUOISE = Color(64,224,208)
 RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
 # Other vars
-LIGHTSHIFT = 0  #shift the lights down the strand to the other end 
+LIGHTSHIFT = 0  #shift the lights down the strand to the other end
 FLICKERLOOP = 3  #number of loops to flicker
 
 #list of colors, tried to match the show as close as possible
 COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
           YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
-          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE, 
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE,
           ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
-          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
+          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
 
 # Standard process for when message received - TODO: all colors disappear in random order, then double flash.
 def receiveFlash():
@@ -60,29 +60,33 @@ def receiveFlash():
 def getTwilioMessage():
     rawSms = request.args.getlist('Body')
     sms = rawSms[0].encode("utf-8").lower()
-    modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
+    modifiedSms = re.sub('[^a-zA-Z0-9\n\s]', '', sms).split()
 
     # Flash twice on receipt
     receiveFlash()
 
-    # look up address value for eachLetter key and light up
-    for eachLetter in modifiedSms:
-      result = mapLetterToLed(eachLetter, len(COLORS))
-      position = result[0]
-      color = result[1]
-      strip.setPixelColor(position, color)
-      strip.show()
-      time.sleep(1)
-      strip.setPixelColor(position, OFF)
-      strip.show()
-      time.sleep(.5)
+    for eachWord in modifiedSms:
+        # look up address value for eachLetter key and light up
+        for eachLetter in eachWord:
+          result = mapLetterToLed(eachLetter, len(COLORS))
+          position = result[0]
+          color = result[1]
+          strip.setPixelColor(position, color)
+          strip.show()
+          time.sleep(1)
+          strip.setPixelColor(position, OFF)
+          strip.show()
+          time.sleep(.5)
+        time.sleep(2)
 
     for led in range(26): #TODO:remove hardcode
       strip.setPixelColor(led, OFF)
     strip.show()
 
+    return ""
+
 # Map a lower case char to an LED
-def mapLetterToLed(letter, colorLen): 
+def mapLetterToLed(letter, colorLen):
     letterPosColor = {
     'a': (0+LIGHTSHIFT, COLORS[0%colorLen]),
     'b': (1+LIGHTSHIFT, COLORS[1%colorLen]),
@@ -110,7 +114,6 @@ def mapLetterToLed(letter, colorLen):
     'x': (23+LIGHTSHIFT, COLORS[23%colorLen]),
     'y': (24+LIGHTSHIFT, COLORS[24%colorLen]),
     'z': (25+LIGHTSHIFT, COLORS[25%colorLen]),
-    ' ': (26+LIGHTSHIFT, COLORS[26%colorLen]),
     }
     return letterPosColor[letter]
 
