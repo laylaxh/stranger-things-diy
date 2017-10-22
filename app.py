@@ -4,7 +4,11 @@ from flask import request
 from neopixel import *
 app = Flask(__name__)
 
+# Start random seed
+random.seed()
+
 # LED strip configuration:
+TEST_COUNT     = 0       # test comment
 LED_COUNT      = 50      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -35,11 +39,31 @@ COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
           ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
           YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE] 
 
+# Standard process for when message received - TODO: all colors disappear in random order, then double flash.
+def receiveFlash():
+      # All LEDs turn on in one of the predefind COLORS
+      for i in range(strip.numPixels()):
+        strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
+      strip.show()
+      time.sleep(.5)
+
+      # Kill lights off randomly
+      s = list(range(50)) # TODO: Make this 50-dynamicly the total # of LEDs
+      random.shuffle(s)
+
+      for led in range(50):
+        strip.setPixelColor(s[led], OFF)
+        strip.show()
+        time.sleep(random.randint(1,30)/1000.0)
+
 @app.route("/")
 def getTwilioMessage():
     rawSms = request.args.getlist('Body')
     sms = rawSms[0].encode("utf-8").lower()
     modifiedSms = re.sub('[^a-zA-Z0-9\n\.]', ' ', sms)
+
+    # Flash twice on receipt
+    receiveFlash()
 
     # look up address value for eachLetter key and light up
     for eachLetter in modifiedSms:
@@ -48,12 +72,12 @@ def getTwilioMessage():
       color = result[1]
       strip.setPixelColor(position, color)
       strip.show()
-      time.sleep(2)
+      time.sleep(1)
       strip.setPixelColor(position, OFF)
       strip.show()
-      time.sleep(1)
+      time.sleep(.5)
 
-    for led in range(len(26)): #TODO:remove hardcode
+    for led in range(26): #TODO:remove hardcode
       strip.setPixelColor(led, OFF)
     strip.show()
 
