@@ -69,31 +69,31 @@ def preMessageDisplay():
 		strip.setPixelColor(pixelIndices[led], OFF)
 		lightOneUp(random.randint(1,30)/1000.0)
 
+	# Flash on/off
 	for i in totalPixels:
 		strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
 	lightOneUp(.5)
 
-	for led in totalPixels:
-		strip.setPixelColor(pixelIndices[led], OFF)
-	lightOneUp(1)
+	turnOffLights()
 
 def displayMessage(message):
 	preMessageDisplay()
 
+	# TODO: Find  amore elegent way to handle easter egg options? Maybe have a show selector definition, and below can be a 'normalWord?'
 	if len(message) == 1 and message[0] == 'run':
 		runEasterEgg() 
-
-	for eachWord in message:
-		# Look up address value for eachLetter key and display
-		for eachLetter in eachWord:
-			result = mapLetterToLed(eachLetter, len(COLORS))
-			position = result[0]
-			color = result[1]
-			strip.setPixelColor(position, color)
-			lightOneUp(1)
-			strip.setPixelColor(position, OFF)
-			lightOneUp(.5)
-		time.sleep(.5)
+	else:
+		for eachWord in message:
+			# Look up address value for eachLetter key and display
+			for eachLetter in eachWord:
+				result = mapLetterToLed(eachLetter, len(COLORS))
+				position = result[0]
+				color = result[1]
+				strip.setPixelColor(position, color)
+				lightOneUp(1)
+				strip.setPixelColor(position, OFF)
+				lightOneUp(.5)
+			time.sleep(.5)
 
 def turnOffLights():
 	for led in range(strip.numPixels()):
@@ -108,27 +108,31 @@ def runEasterEgg():
 	strip.setPixelColor(position, color)
 	lightOneUp(3)
 
-	# White Flash
-	for eachPixel in range(strip.numPixels()):
-		strip.setPixelColor(eachPixel, WHITE)
-	lightOneUp(.5)
+	# White Flash, Red Remains
+    for led in range(strip.numPixels()):
+        if led == position:
+              continue	# Skip Red
+        else:
+              strip.setPixelColor(led, WHITE)
+    strip.show()
+    time.sleep(.5)
 	
 	# Bleed Red loop
 	counter = 1
-	for eachPixel in range(strip.numPixels()):
-	  if strip.getPixelColor(eachPixel) == RED:
-		  strip.setPixelColor(eachPixel+1, RED)
-		  strip.setPixelColor(eachPixel-counter, RED)
+	for led in range(strip.numPixels()):
+	  if strip.getPixelColor(led) == RED:
+		  strip.setPixelColor(led+1, RED)
+		  strip.setPixelColor(led-counter, RED)
 		  counter = counter + 2
 	  lightOneUp(.1)
 
 	# Flash Red
 	for i in range(20):
-		for eachPixel in range(strip.numPixels()):
-			if strip.getPixelColor(eachPixel) == RED:
-				strip.setPixelColor(eachPixel, WHITE)
+		for led in range(strip.numPixels()):
+			if strip.getPixelColor(led) == RED:
+				strip.setPixelColor(led, WHITE)
 			else:
-				strip.setPixelColor(eachPixel, RED)
+				strip.setPixelColor(led, RED)
 		lightOneUp(.2)
 
 def mapLetterToLed(letter, colorLen):
