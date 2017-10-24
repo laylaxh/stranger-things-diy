@@ -121,8 +121,8 @@ def run():
               print('RED SKIP')
         else:
               strip.setPixelColor(eachPixel, WHITE)
-        strip.show()
-    time.sleep(1)
+    strip.show()
+    time.sleep(.5)
     
     # Bleed Red loop
     counter = 1
@@ -132,7 +132,7 @@ def run():
                strip.setPixelColor(eachPixel-counter, RED)
                counter = counter + 2
          strip.show()
-         time.sleep(.3)
+         time.sleep(.1)
 
     # Flash Red
     for i in range(20):
@@ -142,7 +142,7 @@ def run():
                 else:
                       strip.setPixelColor(eachPixel, RED)
           strip.show()
-          time.sleep(.1)
+          time.sleep(.2)
 
     #turn off
     for eachPixel in range(strip.numPixels()):
