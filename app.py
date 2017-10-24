@@ -2,194 +2,170 @@ import code, string, time, random, re
 from flask import Flask
 from flask import request
 from neopixel import *
+
 app = Flask(__name__)
 
 # Start random seed
 random.seed()
 
-# LED strip configuration:
-TEST_COUNT     = 0       # test comment
-LED_COUNT      = 50      # Number of LED pixels.
-LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!).
+# LED strip configuration
+LED_COUNT      = 50      # Number of LED pixels
+LED_PIN        = 18      # GPIO pin connected to the pixels (must support PWM!)
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 5       # DMA channel to use for generating signal (try 5)
 LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 
-#Predefined Colors
-OFF = Color(0,0,0)
-WHITE = Color(255,255,255)
-RED = Color(255,0,0)
-GREEN = Color(0,255,0)
-BLUE = Color(0,0,255)
-PURPLE = Color(128,0,128)
-YELLOW = Color(255,255,0)
-ORANGE = Color(255,50,0)
-TURQUOISE = Color(64,224,208)
-RANDOM = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
+# Predefined colors
+OFF            = Color(0,0,0)
+WHITE          = Color(255,255,255)
+RED            = Color(255,0,0)
+GREEN          = Color(0,255,0)
+BLUE           = Color(0,0,255)
+PURPLE         = Color(128,0,128)
+YELLOW         = Color(255,255,0)
+ORANGE         = Color(255,50,0)
+TURQUOISE      = Color(64,224,208)
+RANDOM         = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
 # Other vars
-LIGHTSHIFT = 0  #shift the lights down the strand to the other end
-FLICKERLOOP = 3  #number of loops to flicker
-
-#list of colors, tried to match the show as close as possible
-COLORS = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
-          YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
-          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE,
-          ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
-          YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
-
-print('Init') # Steve Testing
-
-# Standard process for when message received - TODO: all colors disappear in random order, then double flash.
-def receiveFlash():
-      print('receiveFlash()') # Steve Testing
-      # All LEDs turn on in one of the predefind COLORS
-      for i in range(strip.numPixels()):
-        strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
-      strip.show()
-      time.sleep(.5)
-
-      # Kill lights off randomly
-      s = list(range(strip.numPixels()))
-      random.shuffle(s)
-
-      for led in range(strip.numPixels()):
-        strip.setPixelColor(s[led], OFF)
-        strip.show()
-        time.sleep(random.randint(1,30)/1000.0)
-
-      for i in range(strip.numPixels()):
-        strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
-      strip.show()
-      time.sleep(.5)
-
-      for led in range(strip.numPixels()):
-        strip.setPixelColor(s[led], OFF)
-      strip.show()
-
-      time.sleep(1)
+LIGHTSHIFT     = 0  #shift the lights down the strand to the other end
+FLICKERLOOP    = 3  #number of loops to flicker
+COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
+									YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
+									YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE,
+									ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
+									YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
 
 @app.route("/")
-def getTwilioMessage():
-    print('getTwilioMessage') #Steve Testing
-    rawSms = request.args.getlist('Body')
-    sms = rawSms[0].encode("utf-8").lower()
-    modifiedSms = re.sub('[^a-zA-Z0-9\n\s]', '', sms).split()
-
-    # Flash twice on receipt
-    receiveFlash()
-    
-    if modifiedSms[0] == 'run':
-          run()          
-    else:
-          blinkMessage(modifiedSms)
-
-    for led in range(strip.numPixels()):
-      strip.setPixelColor(led, OFF)
-    strip.show()
-
-    return ""
-
-def blinkMessage(message):
-      for eachWord in message:
-      # look up address value for eachLetter key and light up
-            for eachLetter in eachWord:
-                  result = mapLetterToLed(eachLetter, len(COLORS))
-                  position = result[0]
-                  color = result[1]
-                  strip.setPixelColor(position, color)
-                  strip.show()
-                  time.sleep(1)
-                  strip.setPixelColor(position, OFF)
-                  strip.show()
-                  time.sleep(.5)
-      time.sleep(.5)
-
 def run():
-    blinkMessage('ru')
-    result = mapLetterToLed('n', len(COLORS))
-    position = result[0]
-    color = result[1]
-    strip.setPixelColor(position, color)
-    strip.show()
-    time.sleep(3)
+	demogorgonMessage = getTwilioMessage()
+	displayMessage(demogorgonMessage)
+	turnOffLights()
 
-    # White Flash
-    for eachPixel in range(strip.numPixels()):
-        if eachPixel == position:
-              print('RED SKIP')
-        else:
-              strip.setPixelColor(eachPixel, WHITE)
-    strip.show()
-    time.sleep(.5)
-    
-    # Bleed Red loop
-    counter = 1
-    for eachPixel in range(strip.numPixels()):
-         if strip.getPixelColor(eachPixel) == RED:
-               strip.setPixelColor(eachPixel+1, RED)
-               strip.setPixelColor(eachPixel-counter, RED)
-               counter = counter + 2
-         strip.show()
-         time.sleep(.1)
+def lightOneUp(sleepTime):
+	strip.show()
+	time.sleep(sleepTime)
 
-    # Flash Red
-    for i in range(20):
-          for eachPixel in range(strip.numPixels()):
-                if strip.getPixelColor(eachPixel) == RED:
-                      strip.setPixelColor(eachPixel, WHITE)
-                else:
-                      strip.setPixelColor(eachPixel, RED)
-          strip.show()
-          time.sleep(.2)
+def getTwilioMessage():
+	rawSms      = request.args.getlist('Body')
+	sms         = rawSms[0].encode("utf-8").lower()
+	modifiedSms = re.sub('[^a-zA-Z0-9\n\s]', '', sms).split()
 
-    #turn off
-    for eachPixel in range(strip.numPixels()):
-          strip.setPixelColor(eachPixel, OFF)
-    strip.show()
+	if len(modifiedSms) == 1 and modifiedSms[0] == 'run':
+		runEasterEgg() 
+	return modifiedSms  
 
-      
+def preMessageDisplay():
+	totalPixels  = range(strip.numPixels())
 
-# Map a lower case char to an LED
+	# All LEDs turn on in one of the predefined COLORS
+	for i in totalPixels:
+		strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
+	lightOneUp(.5)
+
+	# Kill lights off in random order
+	pixelIndices = list(totalPixels)
+	random.shuffle(pixelIndices)
+
+	for led in totalPixels:
+		strip.setPixelColor(pixelIndices[led], OFF)
+		lightOneUp(random.randint(1,30)/1000.0)
+
+	for i in totalPixels:
+		strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
+	lightOneUp(.5)
+
+	for led in totalPixels:
+		strip.setPixelColor(pixelIndices[led], OFF)
+	lightOneUp(1)
+
+def displayMessage(message):
+	preMessageDisplay()
+
+	for eachWord in message:
+		# Look up address value for eachLetter key and display
+		for eachLetter in eachWord:
+			result = mapLetterToLed(eachLetter, len(COLORS))
+			position = result[0]
+			color = result[1]
+			strip.setPixelColor(position, color)
+			lightOneUp(1)
+			strip.setPixelColor(position, OFF)
+			lightOneUp(.5)
+		time.sleep(.5)
+
+def turnOffLights():
+	for led in range(strip.numPixels()):
+		strip.setPixelColor(led, OFF)
+	strip.show()
+
+def runEasterEgg():
+	displayMessage('ru')
+	result = mapLetterToLed('n', len(COLORS))
+	position = result[0]
+	color = result[1]
+	strip.setPixelColor(position, color)
+	lightOneUp(3)
+
+	# White Flash
+	for eachPixel in range(strip.numPixels()):
+		strip.setPixelColor(eachPixel, WHITE)
+	lightOneUp(.5)
+	
+	# Bleed Red loop
+	counter = 1
+	for eachPixel in range(strip.numPixels()):
+	  if strip.getPixelColor(eachPixel) == RED:
+		  strip.setPixelColor(eachPixel+1, RED)
+		  strip.setPixelColor(eachPixel-counter, RED)
+		  counter = counter + 2
+	  lightOneUp(.1)
+
+	# Flash Red
+	for i in range(20):
+		for eachPixel in range(strip.numPixels()):
+			if strip.getPixelColor(eachPixel) == RED:
+				strip.setPixelColor(eachPixel, WHITE)
+			else:
+				strip.setPixelColor(eachPixel, RED)
+		lightOneUp(.2)
+	turnOffLights()
+
 def mapLetterToLed(letter, colorLen):
-    print('mapLetterToLed()') # Steve Testing
-    letterPosColor = {
-    'a': (0+LIGHTSHIFT, COLORS[0%colorLen]),
-    'b': (1+LIGHTSHIFT, COLORS[1%colorLen]),
-    'c': (2+LIGHTSHIFT, COLORS[2%colorLen]),
-    'd': (3+LIGHTSHIFT, COLORS[3%colorLen]),
-    'e': (4+LIGHTSHIFT, COLORS[4%colorLen]),
-    'f': (5+LIGHTSHIFT, COLORS[5%colorLen]),
-    'g': (6+LIGHTSHIFT, COLORS[6%colorLen]),
-    'h': (7+LIGHTSHIFT, COLORS[7%colorLen]),
-    'i': (8+LIGHTSHIFT, COLORS[8%colorLen]),
-    'j': (9+LIGHTSHIFT, COLORS[9%colorLen]),
-    'k': (10+LIGHTSHIFT, COLORS[10%colorLen]),
-    'l': (11+LIGHTSHIFT, COLORS[11%colorLen]),
-    'm': (12+LIGHTSHIFT, COLORS[12%colorLen]),
-    'n': (13+LIGHTSHIFT, RED),                # COLORS[13%colorLen]
-    'o': (14+LIGHTSHIFT, COLORS[14%colorLen]),
-    'p': (15+LIGHTSHIFT, COLORS[15%colorLen]),
-    'q': (16+LIGHTSHIFT, COLORS[16%colorLen]),
-    'r': (17+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
-    's': (18+LIGHTSHIFT, COLORS[18%colorLen]),
-    't': (19+LIGHTSHIFT, COLORS[19%colorLen]),
-    'u': (20+LIGHTSHIFT, BLUE),               # COLORS[20%colorLen]
-    'v': (21+LIGHTSHIFT, COLORS[21%colorLen]),
-    'w': (22+LIGHTSHIFT, COLORS[22%colorLen]),
-    'x': (23+LIGHTSHIFT, COLORS[23%colorLen]),
-    'y': (24+LIGHTSHIFT, COLORS[24%colorLen]),
-    'z': (25+LIGHTSHIFT, COLORS[25%colorLen]),
-    }
-    return letterPosColor[letter]
-
+	letterPosColor = {
+	'a': (0+LIGHTSHIFT, COLORS[0%colorLen]),
+	'b': (1+LIGHTSHIFT, COLORS[1%colorLen]),
+	'c': (2+LIGHTSHIFT, COLORS[2%colorLen]),
+	'd': (3+LIGHTSHIFT, COLORS[3%colorLen]),
+	'e': (4+LIGHTSHIFT, COLORS[4%colorLen]),
+	'f': (5+LIGHTSHIFT, COLORS[5%colorLen]),
+	'g': (6+LIGHTSHIFT, COLORS[6%colorLen]),
+	'h': (7+LIGHTSHIFT, COLORS[7%colorLen]),
+	'i': (8+LIGHTSHIFT, COLORS[8%colorLen]),
+	'j': (9+LIGHTSHIFT, COLORS[9%colorLen]),
+	'k': (10+LIGHTSHIFT, COLORS[10%colorLen]),
+	'l': (11+LIGHTSHIFT, COLORS[11%colorLen]),
+	'm': (12+LIGHTSHIFT, COLORS[12%colorLen]),
+	'n': (13+LIGHTSHIFT, RED),                # COLORS[13%colorLen]
+	'o': (14+LIGHTSHIFT, COLORS[14%colorLen]),
+	'p': (15+LIGHTSHIFT, COLORS[15%colorLen]),
+	'q': (16+LIGHTSHIFT, COLORS[16%colorLen]),
+	'r': (17+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
+	's': (18+LIGHTSHIFT, COLORS[18%colorLen]),
+	't': (19+LIGHTSHIFT, COLORS[19%colorLen]),
+	'u': (20+LIGHTSHIFT, BLUE),               # COLORS[20%colorLen]
+	'v': (21+LIGHTSHIFT, COLORS[21%colorLen]),
+	'w': (22+LIGHTSHIFT, COLORS[22%colorLen]),
+	'x': (23+LIGHTSHIFT, COLORS[23%colorLen]),
+	'y': (24+LIGHTSHIFT, COLORS[24%colorLen]),
+	'z': (25+LIGHTSHIFT, COLORS[25%colorLen]),
+	}
+	return letterPosColor[letter]
 
 if __name__ == "__main__":
-    print('first line of __main__') # steve Testing
-    # Create NeoPixel object with appropriate configuration.
-    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
-    # Intialize the library (must be called once before other functions).
-    strip.begin()
-    app.run()
-    print('last line of __main__') # Steve Testing
+	# Create NeoPixel object with appropriate configuration
+	strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
+	# Initialize the library (must be called once before other functions)
+	strip.begin()
+	app.run()
