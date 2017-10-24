@@ -51,10 +51,7 @@ def getTwilioMessage():
 	rawSms      = request.args.getlist('Body')
 	sms         = rawSms[0].encode("utf-8").lower()
 	modifiedSms = re.sub('[^a-zA-Z0-9\n\s]', '', sms).split()
-
-	if len(modifiedSms) == 1 and modifiedSms[0] == 'run':
-		runEasterEgg() 
-	return modifiedSms  
+	return modifiedSms 
 
 def preMessageDisplay():
 	totalPixels  = range(strip.numPixels())
@@ -82,6 +79,9 @@ def preMessageDisplay():
 
 def displayMessage(message):
 	preMessageDisplay()
+
+	if len(message) == 1 and message[0] == 'run':
+		runEasterEgg() 
 
 	for eachWord in message:
 		# Look up address value for eachLetter key and display
@@ -130,7 +130,6 @@ def runEasterEgg():
 			else:
 				strip.setPixelColor(eachPixel, RED)
 		lightOneUp(.2)
-	turnOffLights()
 
 def mapLetterToLed(letter, colorLen):
 	letterPosColor = {
