@@ -79,14 +79,13 @@ def preMessageDisplay():
 def responseChooser(message):
 	if len(message) == 1 and message[0] == 'run':
 		runEasterEgg()
-	else:
-		normalMessage(message)
-
 	# For Numbers we know
 	if request.args.getlist('from') == '8182697821' and random.randint(0,10) > 6:
 		displayMessage('hi layla')
-	elif request.args.getlist('from') == '3233636062' and random.randint(0,10) > 6:
+	if request.args.getlist('from') == '3233636062' and random.randint(0,10) > 6:
 		displayMessage('icu zach')
+  else:
+    normalMessage(message)
 
 def normalMessage(message)
 	preMessageDisplay()
@@ -122,13 +121,12 @@ def runEasterEgg():
 	lightOneUp(3)
 
 	# White Flash, Red Remains
-    for led in range(strip.numPixels()):
-        if led == position:
-            	continue	# Skip Red
-        else:
-            	strip.setPixelColor(led, WHITE)
-    strip.show()
-    time.sleep(.5)
+  for led in range(strip.numPixels()):
+    if led == position:
+      continue	# Skip Red
+    else:
+      strip.setPixelColor(led, WHITE)
+  lightOneUp(.5)
 	
 	# Bleed Red loop
 	counter = 1
