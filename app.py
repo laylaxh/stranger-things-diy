@@ -3,6 +3,10 @@ from flask import Flask
 from flask import request
 from neopixel import *
 
+"""
+code.interact(local=dict(globals(), **locals()))
+"""
+
 app = Flask(__name__)
 
 # Start random seed
@@ -40,8 +44,10 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
 @app.route("/")
 def run():
   demogorgonMessage = getTwilioMessage()
+  preMessageDisplay()
   responseChooser(demogorgonMessage)
   turnOffLights()
+  return ""
 
 def lightOneUp(sleepTime):
   strip.show()
@@ -79,24 +85,26 @@ def preMessageDisplay():
 def responseChooser(message):
   if len(message) == 1 and message[0] == 'run':
     runEasterEgg()
-  # For numbers we know
-  elif request.args.getlist('from') == '8182697821' and random.randint(0,10) > 6:
-    displayMessage('hi layla')
-  elif request.args.getlist('from') == '3233636062' and random.randint(0,10) > 6:
-    displayMessage('icu zach')
   else:
     normalMessage(message)
+  
+  # For numbers we know
+  friendNumber = request.args.getlist('From')[0].encode("utf-8")
+  if friendNumber == '+18182697821' and random.randint(0,10) >= 0:
+    displayMessage('hi layla'.split())
+  elif friendNumber == '3233636062' and random.randint(0,10) > 6:
+    displayMessage('icu zach'.split())
 
-def normalMessage(message)
-  preMessageDisplay()
+def normalMessage(message):
   displayMessage(message)
 
+
 def displayMessage(message):
-  for eachWord in message:
-    displayWord(message[eachWord])
+  for word in message:
+    displayWord(word)
     time.sleep(.5)
 
-def displayWord(word)
+def displayWord(word):
   # Look up address value for eachLetter key and display
   for eachLetter in word:
     result = mapLetterToLed(eachLetter, len(COLORS))
