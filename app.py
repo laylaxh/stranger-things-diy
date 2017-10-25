@@ -40,7 +40,7 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
 @app.route("/")
 def run():
 	demogorgonMessage = getTwilioMessage()
-	displayMessage(demogorgonMessage)
+	responseChooser(demogorgonMessage)
 	turnOffLights()
 
 def lightOneUp(sleepTime):
@@ -76,24 +76,37 @@ def preMessageDisplay():
 
 	turnOffLights()
 
-def displayMessage(message):
-	preMessageDisplay()
-
-	# TODO: Find  amore elegent way to handle easter egg options? Maybe have a show selector definition, and below can be a 'normalWord?'
+def responseChooser(message):
 	if len(message) == 1 and message[0] == 'run':
-		runEasterEgg() 
+		runEasterEgg()
 	else:
-		for eachWord in message:
-			# Look up address value for eachLetter key and display
-			for eachLetter in eachWord:
-				result = mapLetterToLed(eachLetter, len(COLORS))
-				position = result[0]
-				color = result[1]
-				strip.setPixelColor(position, color)
-				lightOneUp(1)
-				strip.setPixelColor(position, OFF)
-				lightOneUp(.5)
-			time.sleep(.5)
+		normalMessage(message)
+
+	# For Numbers we know
+	if request.args.getlist('from') == '8182697821' and random.randint(0,10) > 6:
+		displayMessage('hi layla')
+	elif request.args.getlist('from') == '3233636062' and random.randint(0,10) > 6:
+		displayMessage('icu zach')
+
+def normalMessage(message)
+	preMessageDisplay()
+	displayMessage(message)
+
+def displayMessage(message):
+	for eachWord in message:
+		displayWord(message[eachWord])
+		time.sleep(.5)
+
+def displayWord(word)
+	# Look up address value for eachLetter key and display
+	for eachLetter in word:
+		result = mapLetterToLed(eachLetter, len(COLORS))
+		position = result[0]
+		color = result[1]
+		strip.setPixelColor(position, color)
+		lightOneUp(1)
+		strip.setPixelColor(position, OFF)
+		lightOneUp(.5)
 
 def turnOffLights():
 	for led in range(strip.numPixels()):
@@ -101,7 +114,7 @@ def turnOffLights():
 	strip.show()
 
 def runEasterEgg():
-	displayMessage('ru')
+	displayWord('ru')
 	result = mapLetterToLed('n', len(COLORS))
 	position = result[0]
 	color = result[1]
@@ -111,9 +124,9 @@ def runEasterEgg():
 	# White Flash, Red Remains
     for led in range(strip.numPixels()):
         if led == position:
-              continue	# Skip Red
+            	continue	# Skip Red
         else:
-              strip.setPixelColor(led, WHITE)
+            	strip.setPixelColor(led, WHITE)
     strip.show()
     time.sleep(.5)
 	
