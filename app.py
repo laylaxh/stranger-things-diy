@@ -29,8 +29,8 @@ TURQUOISE      = Color(64,224,208)
 RANDOM         = Color(random.randint(0,255),random.randint(0,255),random.randint(0,255))
 
 # Other vars
-LIGHTSHIFT     = 0  #shift the lights down the strand to the other end
-FLICKERLOOP    = 3  #number of loops to flicker
+LIGHTSHIFT     = 0  # Shift the lights down the strand to the other end
+FLICKERLOOP    = 3  # Number of loops to flicker
 COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
 									YELLOW,PURPLE,RED,GREEN,BLUE,YELLOW,RED,TURQUOISE,GREEN,RED,BLUE,GREEN,ORANGE,
 									YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE,
@@ -79,7 +79,7 @@ def preMessageDisplay():
 def responseChooser(message):
 	if len(message) == 1 and message[0] == 'run':
 		runEasterEgg()
-	# For Numbers we know
+	# For numbers we know
 	if request.args.getlist('from') == '8182697821' and random.randint(0,10) > 6:
 		displayMessage('hi layla')
 	if request.args.getlist('from') == '3233636062' and random.randint(0,10) > 6:
@@ -148,16 +148,16 @@ def runEasterEgg():
 
 def mapLetterToLed(letter, colorLen):
 	letterPosColor = {
-	'a': (0+LIGHTSHIFT, COLORS[0%colorLen]),
-	'b': (1+LIGHTSHIFT, COLORS[1%colorLen]),
-	'c': (2+LIGHTSHIFT, COLORS[2%colorLen]),
-	'd': (3+LIGHTSHIFT, COLORS[3%colorLen]),
-	'e': (4+LIGHTSHIFT, COLORS[4%colorLen]),
-	'f': (5+LIGHTSHIFT, COLORS[5%colorLen]),
-	'g': (6+LIGHTSHIFT, COLORS[6%colorLen]),
-	'h': (7+LIGHTSHIFT, COLORS[7%colorLen]),
-	'i': (8+LIGHTSHIFT, COLORS[8%colorLen]),
-	'j': (9+LIGHTSHIFT, COLORS[9%colorLen]),
+	'a': (0+LIGHTSHIFT,  COLORS[0%colorLen]),
+	'b': (1+LIGHTSHIFT,  COLORS[1%colorLen]),
+	'c': (2+LIGHTSHIFT,  COLORS[2%colorLen]),
+	'd': (3+LIGHTSHIFT,  COLORS[3%colorLen]),
+	'e': (4+LIGHTSHIFT,  COLORS[4%colorLen]),
+	'f': (5+LIGHTSHIFT,  COLORS[5%colorLen]),
+	'g': (6+LIGHTSHIFT,  COLORS[6%colorLen]),
+	'h': (7+LIGHTSHIFT,  COLORS[7%colorLen]),
+	'i': (8+LIGHTSHIFT,  COLORS[8%colorLen]),
+	'j': (9+LIGHTSHIFT,  COLORS[9%colorLen]),
 	'k': (10+LIGHTSHIFT, COLORS[10%colorLen]),
 	'l': (11+LIGHTSHIFT, COLORS[11%colorLen]),
 	'm': (12+LIGHTSHIFT, COLORS[12%colorLen]),
