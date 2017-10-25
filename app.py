@@ -41,6 +41,13 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
                   ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
                   YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
 
+friendNumberMap = {
+  '+13603493405': 'steve rocks', # Steve
+  '+18182697821': 'layla is sexy', # Layla
+  '+13233636062': 'icu zach', # Zach
+  '+13233957777': 'brian do a handstand' # Brian
+  }
+
 @app.route("/")
 def run():
   demogorgonMessage = getTwilioMessage()
@@ -90,10 +97,12 @@ def responseChooser(message):
   
   # For numbers we know
   friendNumber = request.args.getlist('From')[0].encode("utf-8")
-  if friendNumber == '+18182697821' and random.randint(0,10) >= 0:
-    displayMessage('hi layla'.split())
-  elif friendNumber == '3233636062' and random.randint(0,10) > 6:
-    displayMessage('icu zach'.split())
+  if friendNumber in friendNumberMap and random.randint(0,10) >= 0:
+    displayMessage(friendNumberMap[friendNumber].split())
+##  if friendNumber == '+18182697821' and random.randint(0,10) >= 0:
+##    displayMessage('hi layla'.split())
+##  elif friendNumber == '3233636062' and random.randint(0,10) > 6:
+##    displayMessage('icu zach'.split())
 
 def normalMessage(message):
   displayMessage(message)
