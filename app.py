@@ -214,20 +214,23 @@ def demoEasterEgg():
       strip.setPixelColor(lines[0][i-offset0],COLORS[lines[1][i-offset0]])
     if len(lines[2]) >= len(lines[1])-i:
       strip.setPixelColor(lines[2][i-offset2],COLORS[lines[2][i-offset2]])
-    lightOneUp(.5)
+    flickerOn(.5)
     turnOffLights()
   turnOffLights()
 
 # Work in progress  
-def flickerOneOn(position, color, sleeptime):
-  for i in range(1,random.randint(0,6)):
-    strip.setPixelColor(position, color)
+def flickerOn(sleeptime, flickerTimes=6, flashTime=0.05):
+  colorList = []
+  for i in range(0,LED_COUNT):
+    colorList.append(strip.getPixelColor(i))
+  for i in range(1,random.randint(2,flickerTimes)):
     strip.show()
-    time.sleep(.05)
-    strip.setPixelColor(position, OFF)
+    time.sleep(flashTime)
+    turnOffLights()
     strip.show()
-    time.sleep(.05)
-  strip.setPixelColor(position, color)
+    time.sleep(flashTime)
+    for led in range(len(colorList)):
+      strip.setPixelColor(led, colorList[led])
   lightOneUp(sleeptime)
 
 
