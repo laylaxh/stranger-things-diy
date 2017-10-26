@@ -50,6 +50,7 @@ friendNumberMap = {
 
 @app.route("/")
 def run():
+  now = time.time
   demogorgonMessage = getTwilioMessage()
   preMessageDisplay()
   responseChooser(demogorgonMessage)
@@ -90,14 +91,19 @@ def preMessageDisplay():
   turnOffLights()
 
 def responseChooser(message):
+  
+  #print(request.args.getlist('DateSent').encode("utf-8"))
+  
   if len(message) == 1 and message[0] == 'run':
     runEasterEgg()
   else:
     normalMessage(message)
-  
+    
+  code.interact(local=dict(globals(), **locals()))
+
   # For numbers we know
   friendNumber = request.args.getlist('From')[0].encode("utf-8")
-  if friendNumber in friendNumberMap and random.randint(0,10) >= 0:
+  if friendNumber in friendNumberMap and random.randint(0,10) >= 10:
     displayMessage(friendNumberMap[friendNumber].split())
 ##  if friendNumber == '+18182697821' and random.randint(0,10) >= 0:
 ##    displayMessage('hi layla'.split())
