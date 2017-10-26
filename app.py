@@ -47,7 +47,7 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
                   YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
                   
 lines = [list(range(34,50)),list(reversed(range(15,32))), list(range(0,13))]
-
+textID = ''
 
 friendNumberMap = {
   '+13603493405': 'steve rocks', # Steve
@@ -214,11 +214,11 @@ def demoEasterEgg():
       strip.setPixelColor(lines[0][i-offset0],COLORS[lines[1][i-offset0]])
     if len(lines[2]) >= len(lines[1])-i:
       strip.setPixelColor(lines[2][i-offset2],COLORS[lines[2][i-offset2]])
-    flickerOn(.2, flashTime=0.03)
+    flickerAll(.2, flashTime=0.03)
     turnOffLights()
   turnOffLights()
 
-def flickerOn(sleeptime, flickerTimes=6, flashTime=0.05):
+def flickerAll(sleeptime, flickerTimes=6, flashTime=0.05):
   colorList = []
   for i in range(0,LED_COUNT):
     colorList.append(strip.getPixelColor(i))
@@ -232,6 +232,15 @@ def flickerOn(sleeptime, flickerTimes=6, flashTime=0.05):
       strip.setPixelColor(led, colorList[led])
   lightOneUp(sleeptime)
   
+def flickerOne(position, currentColor, flickerTimes=10, flashTime=0.05):
+   for i in range(1,random.randint(2,flickerTimes)):
+    strip.setPixelColor(position, OFF)
+    strip.show()
+    time.sleep(flashTime)
+    strip.setPixelColor(position, currentColor)
+    strip.show()
+    time.sleep(flashTime)
+  
 def rainbowOn(speed, hold=2):
   for row in range(len(lines)):  
     for led in range(len(lines[row])):
@@ -241,11 +250,25 @@ def rainbowOn(speed, hold=2):
   time.sleep(hold)
   turnOffLights()
 
+def spookyScary(times):
+  # Turn all lights on
+  for row in range(len(lines)):  
+    for led in range(len(lines[row])):
+      strip.setPixelColor(lines[row][led], COLORS[(lines[row][led])])
+  strip.show()
+  if times >= 2:
+    for i in range(0,times):
+      randomRow = random.randint(0,2)
+      randomLed = random.randint(0,len(lines[randomRow])-1)
+      currentColor = strip.getPixelColor(randomLed)
+      flickerOne(randomLed, currentColor)
+      time.sleep(1)
+  turnOffLights()
+  
 if __name__ == "__main__":
   # Create NeoPixel object with appropriate configuration
   strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
   # Initialize the library (must be called once before other functions)
   strip.begin()
   rainbowOn(.05)
-  demoEasterEgg()
   app.run()
