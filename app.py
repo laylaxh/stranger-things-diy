@@ -214,11 +214,10 @@ def demoEasterEgg():
       strip.setPixelColor(lines[0][i-offset0],COLORS[lines[1][i-offset0]])
     if len(lines[2]) >= len(lines[1])-i:
       strip.setPixelColor(lines[2][i-offset2],COLORS[lines[2][i-offset2]])
-    flickerOn(.5)
+    flickerOn(.2, flashTime=0.03)
     turnOffLights()
   turnOffLights()
 
-# Work in progress  
 def flickerOn(sleeptime, flickerTimes=6, flashTime=0.05):
   colorList = []
   for i in range(0,LED_COUNT):
@@ -232,12 +231,21 @@ def flickerOn(sleeptime, flickerTimes=6, flashTime=0.05):
     for led in range(len(colorList)):
       strip.setPixelColor(led, colorList[led])
   lightOneUp(sleeptime)
-
+  
+def rainbowOn(speed, hold=2):
+  for row in range(len(lines)):  
+    for led in range(len(lines[row])):
+      strip.setPixelColor(lines[row][led], COLORS[(lines[row][led])])
+      strip.show()
+      time.sleep(speed)
+  time.sleep(hold)
+  turnOffLights()
 
 if __name__ == "__main__":
   # Create NeoPixel object with appropriate configuration
   strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
   # Initialize the library (must be called once before other functions)
   strip.begin()
+  rainbowOn(.05)
   demoEasterEgg()
   app.run()
