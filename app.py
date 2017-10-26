@@ -5,7 +5,12 @@ from neopixel import *
 
 """
 code.interact(local=dict(globals(), **locals()))
+TODO:
+ Demogorgon walk
+ Message charcter limit
 """
+
+
 
 app = Flask(__name__)
 
@@ -40,6 +45,9 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
                   YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,RED,BLUE,
                   ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
                   YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
+                  
+lines = [list(range(34,50)),list(reversed(range(15,32))), list(range(0,13))]
+
 
 friendNumberMap = {
   '+13603493405': 'steve rocks', # Steve
@@ -50,7 +58,6 @@ friendNumberMap = {
 
 @app.route("/")
 def run():
-  now = time.time
   demogorgonMessage = getTwilioMessage()
   preMessageDisplay()
   responseChooser(demogorgonMessage)
@@ -99,16 +106,13 @@ def responseChooser(message):
   else:
     normalMessage(message)
     
-  code.interact(local=dict(globals(), **locals()))
+##  code.interact(local=dict(globals(), **locals()))
 
   # For numbers we know
   friendNumber = request.args.getlist('From')[0].encode("utf-8")
   if friendNumber in friendNumberMap and random.randint(0,10) >= 10:
     displayMessage(friendNumberMap[friendNumber].split())
-##  if friendNumber == '+18182697821' and random.randint(0,10) >= 0:
-##    displayMessage('hi layla'.split())
-##  elif friendNumber == '3233636062' and random.randint(0,10) > 6:
-##    displayMessage('icu zach'.split())
+
 
 def normalMessage(message):
   displayMessage(message)
@@ -128,7 +132,7 @@ def displayWord(word):
     strip.setPixelColor(position, color)
     lightOneUp(1)
     strip.setPixelColor(position, OFF)
-    lightOneUp(.5)
+    lightOneUp(.2)
 
 def turnOffLights():
   for led in range(strip.numPixels()):
@@ -171,38 +175,66 @@ def runEasterEgg():
 
 def mapLetterToLed(letter, colorLen):
   letterPosColor = {
-  'a': (0+LIGHTSHIFT,  COLORS[0%colorLen]),
-  'b': (1+LIGHTSHIFT,  COLORS[1%colorLen]),
-  'c': (2+LIGHTSHIFT,  COLORS[2%colorLen]),
-  'd': (3+LIGHTSHIFT,  COLORS[3%colorLen]),
-  'e': (4+LIGHTSHIFT,  COLORS[4%colorLen]),
-  'f': (5+LIGHTSHIFT,  COLORS[5%colorLen]),
-  'g': (6+LIGHTSHIFT,  COLORS[6%colorLen]),
-  'h': (7+LIGHTSHIFT,  COLORS[7%colorLen]),
-  'i': (8+LIGHTSHIFT,  COLORS[8%colorLen]),
-  'j': (9+LIGHTSHIFT,  COLORS[9%colorLen]),
-  'k': (10+LIGHTSHIFT, COLORS[10%colorLen]),
-  'l': (11+LIGHTSHIFT, COLORS[11%colorLen]),
-  'm': (12+LIGHTSHIFT, COLORS[12%colorLen]),
-  'n': (13+LIGHTSHIFT, RED),                # COLORS[13%colorLen]
-  'o': (14+LIGHTSHIFT, COLORS[14%colorLen]),
-  'p': (15+LIGHTSHIFT, COLORS[15%colorLen]),
-  'q': (16+LIGHTSHIFT, COLORS[16%colorLen]),
-  'r': (17+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
-  's': (18+LIGHTSHIFT, COLORS[18%colorLen]),
-  't': (19+LIGHTSHIFT, COLORS[19%colorLen]),
-  'u': (20+LIGHTSHIFT, BLUE),               # COLORS[20%colorLen]
-  'v': (21+LIGHTSHIFT, COLORS[21%colorLen]),
-  'w': (22+LIGHTSHIFT, COLORS[22%colorLen]),
-  'x': (23+LIGHTSHIFT, COLORS[23%colorLen]),
-  'y': (24+LIGHTSHIFT, COLORS[24%colorLen]),
-  'z': (25+LIGHTSHIFT, COLORS[25%colorLen]),
+  'a': (34+LIGHTSHIFT,  COLORS[0%colorLen]),
+  'b': (36+LIGHTSHIFT,  COLORS[1%colorLen]),
+  'c': (38+LIGHTSHIFT,  COLORS[2%colorLen]),
+  'd': (40+LIGHTSHIFT,  COLORS[3%colorLen]),
+  'e': (42+LIGHTSHIFT,  COLORS[4%colorLen]),
+  'f': (44+LIGHTSHIFT,  COLORS[5%colorLen]),
+  'g': (46+LIGHTSHIFT,  COLORS[6%colorLen]),
+  'h': (48+LIGHTSHIFT,  COLORS[7%colorLen]),
+  'i': (49+LIGHTSHIFT,  COLORS[8%colorLen]),
+  'j': (31+LIGHTSHIFT,  COLORS[9%colorLen]),
+  'k': (29+LIGHTSHIFT, COLORS[10%colorLen]),
+  'l': (27+LIGHTSHIFT, COLORS[11%colorLen]),
+  'm': (25+LIGHTSHIFT, COLORS[12%colorLen]),
+  'n': (23+LIGHTSHIFT, RED),                # COLORS[13%colorLen]
+  'o': (21+LIGHTSHIFT, COLORS[14%colorLen]),
+  'p': (19+LIGHTSHIFT, COLORS[15%colorLen]),
+  'q': (17+LIGHTSHIFT, COLORS[16%colorLen]),
+  'r': (15+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
+  's': (0+LIGHTSHIFT, COLORS[18%colorLen]),
+  't': (2+LIGHTSHIFT, COLORS[19%colorLen]),
+  'u': (4+LIGHTSHIFT, BLUE),               # COLORS[20%colorLen]
+  'v': (6+LIGHTSHIFT, COLORS[21%colorLen]),
+  'w': (8+LIGHTSHIFT, COLORS[22%colorLen]),
+  'x': (10+LIGHTSHIFT, COLORS[23%colorLen]),
+  'y': (11+LIGHTSHIFT, COLORS[24%colorLen]),
+  'z': (12+LIGHTSHIFT, COLORS[25%colorLen]),
   }
   return letterPosColor[letter]
+  
+def demoEasterEgg():
+  offset0 = (len(lines[1])-len(lines[0]))
+  offset2 = (len(lines[1])-len(lines[2]))
+
+  for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
+    strip.setPixelColor(lines[1][i],COLORS[lines[1][i]])
+    if len(lines[0]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[0][i-offset0],COLORS[lines[1][i-offset0]])
+    if len(lines[2]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[2][i-offset2],COLORS[lines[2][i-offset2]])
+    lightOneUp(.5)
+    turnOffLights()
+  turnOffLights()
+
+# Work in progress  
+def flickerOneOn(position, color, sleeptime):
+  for i in range(1,random.randint(0,6)):
+    strip.setPixelColor(position, color)
+    strip.show()
+    time.sleep(.05)
+    strip.setPixelColor(position, OFF)
+    strip.show()
+    time.sleep(.05)
+  strip.setPixelColor(position, color)
+  lightOneUp(sleeptime)
+
 
 if __name__ == "__main__":
   # Create NeoPixel object with appropriate configuration
   strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
   # Initialize the library (must be called once before other functions)
   strip.begin()
+  demoEasterEgg()
   app.run()
