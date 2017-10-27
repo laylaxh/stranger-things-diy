@@ -6,8 +6,7 @@ from neopixel import *
 """
 code.interact(local=dict(globals(), **locals()))
 TODO:
- Demogorgon walk
- Message charcter limit
+  Scary While Loop
 """
 
 
@@ -46,8 +45,8 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
                   ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
                   YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
                   
-lines = [list(range(34,50)),list(reversed(range(15,32))), list(range(0,13))]
-textID = ''
+lines          = [list(range(34,50)),list(reversed(range(15,32))), list(range(0,13))]
+textID         = []  # Attempting to use unique text IDs to perform a while loop. Still in progress  
 
 friendNumberMap = {
   '+13603493405': 'steve rocks', # Steve
@@ -69,9 +68,11 @@ def lightOneUp(sleepTime):
   time.sleep(sleepTime)
 
 def getTwilioMessage():
+  global textID
+  textID = request.args.getlist('SmsMessageSid')  # Updating most recent textID
   rawSms      = request.args.getlist('Body')
   sms         = rawSms[0].encode("utf-8").lower()
-  modifiedSms = re.sub('[^a-zA-Z0-9\n\s]', '', sms).split()
+  modifiedSms = re.sub('[^a-zA-Z0-9\n\s]', '', sms)[0:30].split()
   return modifiedSms 
 
 def preMessageDisplay():
@@ -79,7 +80,7 @@ def preMessageDisplay():
 
   # All LEDs turn on in one of the predefined COLORS
   for i in totalPixels:
-    strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
+    strip.setPixelColor(i, COLORS[i])
   lightOneUp(.5)
 
   # Kill lights off in random order
@@ -90,23 +91,20 @@ def preMessageDisplay():
     strip.setPixelColor(pixelIndices[led], OFF)
     lightOneUp(random.randint(1,30)/1000.0)
 
-  # Flash on/off
-  for i in totalPixels:
-    strip.setPixelColor(i, COLORS[random.randint(0,(len(COLORS)-1))])
-  lightOneUp(.5)
-
-  turnOffLights()
-
 def responseChooser(message):
   
   #print(request.args.getlist('DateSent').encode("utf-8"))
   
   if len(message) == 1 and message[0] == 'run':
     runEasterEgg()
+  elif len(message) == 1 and message[0] == 'spooky':
+    spookyScary(5)
+  elif len(message) == 1 and message [0] == 'demogorgon':
+    demoEasterEgg()
+  elif len(message) == 1 and message[0] == 'rainbow':
+    rainbowOn(.3)
   else:
     normalMessage(message)
-    
-##  code.interact(local=dict(globals(), **locals()))
 
   # For numbers we know
   friendNumber = request.args.getlist('From')[0].encode("utf-8")
@@ -195,7 +193,7 @@ def mapLetterToLed(letter, colorLen):
   'r': (15+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
   's': (0+LIGHTSHIFT, COLORS[18%colorLen]),
   't': (2+LIGHTSHIFT, COLORS[19%colorLen]),
-  'u': (4+LIGHTSHIFT, BLUE),               # COLORS[20%colorLen]
+  'u': (4+LIGHTSHIFT, BLUE),                # COLORS[20%colorLen]
   'v': (6+LIGHTSHIFT, COLORS[21%colorLen]),
   'w': (8+LIGHTSHIFT, COLORS[22%colorLen]),
   'x': (10+LIGHTSHIFT, COLORS[23%colorLen]),
@@ -205,8 +203,8 @@ def mapLetterToLed(letter, colorLen):
   return letterPosColor[letter]
   
 def demoEasterEgg():
-  offset0 = (len(lines[1])-len(lines[0]))
-  offset2 = (len(lines[1])-len(lines[2]))
+  offset0   = (len(lines[1])-len(lines[0]))
+  offset2   = (len(lines[1])-len(lines[2]))
 
   for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
     strip.setPixelColor(lines[1][i],COLORS[lines[1][i]])
@@ -214,7 +212,7 @@ def demoEasterEgg():
       strip.setPixelColor(lines[0][i-offset0],COLORS[lines[1][i-offset0]])
     if len(lines[2]) >= len(lines[1])-i:
       strip.setPixelColor(lines[2][i-offset2],COLORS[lines[2][i-offset2]])
-    flickerAll(.2, flashTime=0.03)
+    flickerAll(.5, flashTime=0.03)
     turnOffLights()
   turnOffLights()
 
@@ -262,13 +260,26 @@ def spookyScary(times):
       randomLed = random.randint(0,len(lines[randomRow])-1)
       currentColor = strip.getPixelColor(randomLed)
       flickerOne(randomLed, currentColor)
-      time.sleep(1)
+      time.sleep(random.uniform(.5, 2.5))
   turnOffLights()
+
+# Work in Progress
+def meantimeLooper():
+  while textID == request.args.getlist('SmsMessageSid'):
+    chooser = random.randint(0,2)
+    if chooser == 0:
+      spookyScary(5)
+    elif chooser == 1:
+      rainbowOn(.3)
+    else:
+      demoEasterEgg()
+    time.sleep(5)
+
   
 if __name__ == "__main__":
   # Create NeoPixel object with appropriate configuration
   strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
   # Initialize the library (must be called once before other functions)
   strip.begin()
-  rainbowOn(.05)
+  rainbowOn(.01)
   app.run()
