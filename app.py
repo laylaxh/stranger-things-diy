@@ -49,16 +49,17 @@ lines          = [list(range(34,50)),list(reversed(range(15,32))), list(range(0,
 textID         = []  # Attempting to use unique text IDs to perform a while loop. Still in progress  
 
 friendNumberMap = {
-  '+13603493405': 'steve rocks', # Steve
-  '+18182697821': 'layla is sexy', # Layla
-  '+13233636062': 'icu zach', # Zach
-  '+13233957777': 'brian do a handstand' # Brian
+  '+13603493405': 'steve rocks',          # Steve
+  '+18182697821': 'layla is sexy',        # Layla
+  '+13233636062': 'icu zach',             # Zach
+  '+13233957777': 'brian do a handstand', # Brian
+  '+18183954507': 'xxxander'              # Xander
   }
 
 @app.route("/")
 def run():
   demogorgonMessage = getTwilioMessage()
-  preMessageDisplay()
+  # preMessageDisplay()
   responseChooser(demogorgonMessage)
   turnOffLights()
   return ""
@@ -101,14 +102,16 @@ def responseChooser(message):
     spookyScary(5)
   elif len(message) == 1 and message [0] == 'demogorgon':
     demoEasterEgg()
-  elif len(message) == 1 and message[0] == 'rainbow':
+  elif len(message) == 1 and message[0] == 'line':
     rainbowOn(.3)
+  elif len(message) == 1 and message [0] == 'rainbow':
+    realRainbow()
   else:
     normalMessage(message)
 
   # For numbers we know
   friendNumber = request.args.getlist('From')[0].encode("utf-8")
-  if friendNumber in friendNumberMap and random.randint(0,10) >= 10:
+  if friendNumber in friendNumberMap and random.randint(0,10) >= 8:
     displayMessage(friendNumberMap[friendNumber].split())
 
 
@@ -262,6 +265,35 @@ def spookyScary(times):
       flickerOne(randomLed, currentColor)
       time.sleep(random.uniform(.5, 2.5))
   turnOffLights()
+  
+  
+def realRainbow():
+  offset0   = (len(lines[1])-len(lines[0]))
+  offset2   = (len(lines[1])-len(lines[2]))
+  rainbowColors = [Color(255,0,255),Color(255,0,255),Color(255,0,255),
+                   Color(75,0,130),Color(75,0,130),Color(0,0,255),Color(0,0,255),
+                   Color(0,255,0),Color(0,255,0),Color(0,255,0),Color(255,255,0),Color(255,255,0),
+                   Color(255,127,0),Color(255,127,0),Color(255,127,0),Color(255,0,0),
+                   Color(255,0,0)]
+  for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
+    strip.setPixelColor(lines[1][i],rainbowColors[i])
+    if len(lines[0]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[0][i-offset0],rainbowColors[i])
+    if len(lines[2]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[2][i-offset2],rainbowColors[i])
+    lightOneUp(.05)
+  for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
+    strip.setPixelColor(lines[1][i],OFF)
+    if len(lines[0]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[0][i-offset0],OFF)
+    if len(lines[2]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[2][i-offset2],OFF)
+    lightOneUp(.05)
+  turnOffLights()
+  
+  
+  
+  
 
 # Work in Progress
 def meantimeLooper():
@@ -281,5 +313,4 @@ if __name__ == "__main__":
   strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
   # Initialize the library (must be called once before other functions)
   strip.begin()
-  rainbowOn(.01)
   app.run()
