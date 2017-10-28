@@ -49,13 +49,20 @@ lines          = [list(range(33,50)),list(reversed(range(15,32))), list(range(0,
 textID         = []  # Attempting to use unique text IDs to perform a while loop. Still in progress  
 
 friendNumberMap = {
-  '+13603493405': 'steve rocks',          # Steve
-  '+18182697821': 'layla turn around',   # Layla
-  '+13233636062': 'icu zach',             # Zach
-  '+13233957777': 'brian do a handstand', # Brian
-  '+18183954507': 'xxxander',             # Xander
-  '+19734627230': 'dale is that u',       # Dale
-  '+18598015371': 'luke i m ur father'    # Luke 
+  '+13603493405': 'get steve a drink',      # Steve
+  '+18182697821': 'haha layla',             # Layla
+  '+13233636062': 'thats gross zach',       # Zach
+  '+13233957777': 'brian do a handstand',   # Brian
+  '+18183954507': 'xxxander',               # Xander
+  '+19734627230': 'dale is that u',         # Dale
+  '+18598015371': 'luke im ur father',      # Luke
+  '+18185171872': 'paging dr josh',         # Josh
+  '+18184150822': 'donniel was here',       # Donniel
+  '+13107966370': 'jesses mom',             # Jesse
+  '+12134402061': 'heidi great costume',    # Heidi
+  '+18312279072': 'broghs where is deck',   # Broghan
+  '+16262789351': 'thats interesting peter',# Peter
+  '+13104220384': 'sophie just dance'       # Sophie 
   }
 
 @app.route("/")
@@ -98,12 +105,14 @@ def responseChooser(message):
     runEasterEgg()
   elif len(message) == 1 and message[0] == 'spooky':
     spookyScary(5)
-  elif len(message) == 1 and message [0] == 'demogorgon':
+  elif len(message) == 1 and message[0] == 'demogorgon':
     demoEasterEgg()
   elif len(message) == 1 and message[0] == 'line':
-    rainbowOn(.05)
-  elif len(message) == 1 and message [0] == 'rainbow':
+    rainbowOn(.02)
+  elif len(message) == 1 and message[0] == 'rainbow':
     realRainbow()
+  elif len(message) == 1 and message[0] == 'barb':
+    barb()
   else:
     normalMessage(message)
 
@@ -165,14 +174,18 @@ def runEasterEgg():
     lightOneUp(.05)
 
   # Flash Red
+  flashColor(RED,WHITE)
+
+def flashColor(currentColor, color):
   for i in range(20):
     for led in range(strip.numPixels()):
-      if strip.getPixelColor(led) == RED:
-        strip.setPixelColor(led, WHITE)
+      if strip.getPixelColor(led) == currentColor:
+        strip.setPixelColor(led, color)
       else:
-        strip.setPixelColor(led, RED)
+        strip.setPixelColor(led, currentColor)
     lightOneUp(.2)
   turnOffLights()
+
   
 def mapLetterToLed(letter, colorLen):
   letterPosColor = {
@@ -194,12 +207,12 @@ def mapLetterToLed(letter, colorLen):
   'p': (20+LIGHTSHIFT, COLORS[15%colorLen]),
   'q': (18+LIGHTSHIFT, COLORS[16%colorLen]),
   'r': (16+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
-  's': (0+LIGHTSHIFT, COLORS[18%colorLen]),
-  't': (2+LIGHTSHIFT, COLORS[19%colorLen]),
-  'u': (4+LIGHTSHIFT, BLUE),                # COLORS[20%colorLen]
-  'v': (6+LIGHTSHIFT, COLORS[21%colorLen]),
-  'w': (8+LIGHTSHIFT, COLORS[22%colorLen]),
-  'x': (9+LIGHTSHIFT, COLORS[23%colorLen]),
+  's': (0+LIGHTSHIFT,  COLORS[18%colorLen]),
+  't': (2+LIGHTSHIFT,  COLORS[19%colorLen]),
+  'u': (4+LIGHTSHIFT,  BLUE),                # COLORS[20%colorLen]
+  'v': (6+LIGHTSHIFT,  COLORS[21%colorLen]),
+  'w': (8+LIGHTSHIFT,  COLORS[22%colorLen]),
+  'x': (9+LIGHTSHIFT,  COLORS[23%colorLen]),
   'y': (11+LIGHTSHIFT, COLORS[24%colorLen]),
   'z': (13+LIGHTSHIFT, COLORS[25%colorLen]),
   }
@@ -215,7 +228,7 @@ def demoEasterEgg():
       strip.setPixelColor(lines[0][i-offset0],COLORS[lines[1][i-offset0]])
     if len(lines[2]) >= len(lines[1])-i:
       strip.setPixelColor(lines[2][i-offset2],COLORS[lines[2][i-offset2]])
-    flickerAll(.5, flashTime=0.03)
+    flickerAll(.2, flashTime=0.03)
     turnOffLights()
   turnOffLights()
 
@@ -275,21 +288,22 @@ def realRainbow():
                    Color(0,255,0),Color(0,255,0),Color(0,255,0),Color(255,255,0),Color(255,255,0),
                    Color(255,127,0),Color(255,127,0),Color(255,127,0),Color(255,0,0),
                    Color(255,0,0)]
-  for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
-    strip.setPixelColor(lines[1][i],rainbowColors[i])
-    if len(lines[0]) >= len(lines[1])-i:
-      strip.setPixelColor(lines[0][i-offset0],rainbowColors[i])
-    if len(lines[2]) >= len(lines[1])-i:
-      strip.setPixelColor(lines[2][i-offset2],rainbowColors[i])
-    lightOneUp(.05)
-  for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
-    strip.setPixelColor(lines[1][i],OFF)
-    if len(lines[0]) >= len(lines[1])-i:
-      strip.setPixelColor(lines[0][i-offset0],OFF)
-    if len(lines[2]) >= len(lines[1])-i:
-      strip.setPixelColor(lines[2][i-offset2],OFF)
-    lightOneUp(.05)
-  turnOffLights()
+  for repeat in range(0,2):  
+    for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
+      strip.setPixelColor(lines[1][i],rainbowColors[i])
+      if len(lines[0]) >= len(lines[1])-i:
+        strip.setPixelColor(lines[0][i-offset0],rainbowColors[i])
+      if len(lines[2]) >= len(lines[1])-i:
+        strip.setPixelColor(lines[2][i-offset2],rainbowColors[i])
+      lightOneUp(.05)
+    for i in range(0,max(len(lines[0]),len(lines[1]),len(lines[2]))):
+      strip.setPixelColor(lines[1][i],OFF)
+      if len(lines[0]) >= len(lines[1])-i:
+        strip.setPixelColor(lines[0][i-offset0],OFF)
+      if len(lines[2]) >= len(lines[1])-i:
+        strip.setPixelColor(lines[2][i-offset2],OFF)
+      lightOneUp(.05)
+    turnOffLights()
   
 """  
 # Work in Progress
@@ -304,6 +318,39 @@ def meantimeLooper():
       demoEasterEgg()
     time.sleep(5)
 """
+
+# TODO: Finish rain 
+def rain():
+  offset0   = (len(lines[1])-len(lines[0]))
+  offset2   = (len(lines[1])-len(lines[2]))
+  maxLen    = max(len(lines[0]),len(lines[1]),len(lines[2]))
+  
+  for i in range(0,xxx):
+    # Generate random rain pixels to be raindrops
+    strip.setPixelColor(lines[0][$$$$$$random],BLUE)
+
+    # Each Line checks if there are blue pixels above
+    for led in range(LED_COUNT):
+      if strip.getPixelColor(led) = BLUE:
+        if led in lines[0]:
+          strip.setPixelColor(lines[1][])
+
+
+    if len(lines[2]) >= len(lines[1])-i:
+      strip.setPixelColor(lines[2][i-offset2],rainbowColors[i])
+    
+    lightOneUp(.05)
+  turnOffLights()
+
+def barb():
+  for i in range(50):
+    strip.setPixelColor(i,BLUE)
+  lightOneUp(2)
+
+  flashColor(BLUE,TURQUOISE)
+
+  turnOffLights()
+  displayMessage("help me".split())
   
 if __name__ == "__main__":
   # Create NeoPixel object with appropriate configuration
