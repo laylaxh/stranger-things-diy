@@ -45,21 +45,23 @@ COLORS         = [YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,
                   ORANGE,RED,YELLOW,GREEN,PURPLE,BLUE,YELLOW,ORANGE,TURQUOISE,RED,GREEN,YELLOW,PURPLE,
                   YELLOW,GREEN,RED,BLUE,ORANGE,TURQUOISE,GREEN,BLUE,ORANGE]
                   
-lines          = [list(range(34,50)),list(reversed(range(15,32))), list(range(0,13))]
+lines          = [list(range(33,50)),list(reversed(range(15,32))), list(range(0,14))] # NEW EDIT was 13
 textID         = []  # Attempting to use unique text IDs to perform a while loop. Still in progress  
 
 friendNumberMap = {
   '+13603493405': 'steve rocks',          # Steve
-  '+18182697821': 'layla is sexy',        # Layla
+  '+18182697821': 'layla turn around',   # Layla
   '+13233636062': 'icu zach',             # Zach
   '+13233957777': 'brian do a handstand', # Brian
-  '+18183954507': 'xxxander'              # Xander
+  '+18183954507': 'xxxander',             # Xander
+  '+19734627230': 'dale is that u',       # Dale
+  '+18598015371': 'luke i m ur father'    # Luke 
   }
 
 @app.route("/")
 def run():
   demogorgonMessage = getTwilioMessage()
-  # preMessageDisplay()
+  preMessageDisplay()
   responseChooser(demogorgonMessage)
   turnOffLights()
   return ""
@@ -80,17 +82,13 @@ def preMessageDisplay():
   totalPixels  = range(strip.numPixels())
 
   # All LEDs turn on in one of the predefined COLORS
-  for i in totalPixels:
-    strip.setPixelColor(i, COLORS[i])
-  lightOneUp(.5)
-
-  # Kill lights off in random order
-  pixelIndices = list(totalPixels)
-  random.shuffle(pixelIndices)
-
-  for led in totalPixels:
-    strip.setPixelColor(pixelIndices[led], OFF)
-    lightOneUp(random.randint(1,30)/1000.0)
+  for i in range(0,2):
+    for i in totalPixels:
+      strip.setPixelColor(i, COLORS[i])
+    lightOneUp(.5)
+  
+    turnOffLights()
+    time.sleep(.2)
 
 def responseChooser(message):
   
@@ -103,7 +101,7 @@ def responseChooser(message):
   elif len(message) == 1 and message [0] == 'demogorgon':
     demoEasterEgg()
   elif len(message) == 1 and message[0] == 'line':
-    rainbowOn(.3)
+    rainbowOn(.05)
   elif len(message) == 1 and message [0] == 'rainbow':
     realRainbow()
   else:
@@ -111,7 +109,7 @@ def responseChooser(message):
 
   # For numbers we know
   friendNumber = request.args.getlist('From')[0].encode("utf-8")
-  if friendNumber in friendNumberMap and random.randint(0,10) >= 8:
+  if friendNumber in friendNumberMap and random.randint(0,10) >= 10:
     displayMessage(friendNumberMap[friendNumber].split())
 
 
@@ -146,6 +144,7 @@ def runEasterEgg():
   position = result[0]
   color = result[1]
   strip.setPixelColor(position, color)
+  time.sleep(.5)
   lightOneUp(3)
 
   # White Flash, Red Remains
@@ -163,7 +162,7 @@ def runEasterEgg():
       strip.setPixelColor(led+1, RED)
       strip.setPixelColor(led-counter, RED)
       counter = counter + 2
-    lightOneUp(.1)
+    lightOneUp(.05)
 
   # Flash Red
   for i in range(20):
@@ -173,35 +172,36 @@ def runEasterEgg():
       else:
         strip.setPixelColor(led, RED)
     lightOneUp(.2)
-
+  turnOffLights()
+  
 def mapLetterToLed(letter, colorLen):
   letterPosColor = {
-  'a': (34+LIGHTSHIFT,  COLORS[0%colorLen]),
-  'b': (36+LIGHTSHIFT,  COLORS[1%colorLen]),
+  'a': (33+LIGHTSHIFT,  COLORS[0%colorLen]),
+  'b': (35+LIGHTSHIFT,  COLORS[1%colorLen]),
   'c': (38+LIGHTSHIFT,  COLORS[2%colorLen]),
   'd': (40+LIGHTSHIFT,  COLORS[3%colorLen]),
-  'e': (42+LIGHTSHIFT,  COLORS[4%colorLen]),
-  'f': (44+LIGHTSHIFT,  COLORS[5%colorLen]),
-  'g': (46+LIGHTSHIFT,  COLORS[6%colorLen]),
-  'h': (48+LIGHTSHIFT,  COLORS[7%colorLen]),
-  'i': (49+LIGHTSHIFT,  COLORS[8%colorLen]),
-  'j': (31+LIGHTSHIFT,  COLORS[9%colorLen]),
-  'k': (29+LIGHTSHIFT, COLORS[10%colorLen]),
-  'l': (27+LIGHTSHIFT, COLORS[11%colorLen]),
-  'm': (25+LIGHTSHIFT, COLORS[12%colorLen]),
-  'n': (23+LIGHTSHIFT, RED),                # COLORS[13%colorLen]
-  'o': (21+LIGHTSHIFT, COLORS[14%colorLen]),
-  'p': (19+LIGHTSHIFT, COLORS[15%colorLen]),
-  'q': (17+LIGHTSHIFT, COLORS[16%colorLen]),
-  'r': (15+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
+  'e': (41+LIGHTSHIFT,  COLORS[4%colorLen]),
+  'f': (43+LIGHTSHIFT,  COLORS[5%colorLen]),
+  'g': (44+LIGHTSHIFT,  COLORS[6%colorLen]),
+  'h': (46+LIGHTSHIFT,  COLORS[7%colorLen]),
+  'i': (47+LIGHTSHIFT,  COLORS[8%colorLen]),
+  'j': (49+LIGHTSHIFT,  COLORS[9%colorLen]),
+  'k': (30+LIGHTSHIFT, COLORS[10%colorLen]),
+  'l': (28+LIGHTSHIFT, COLORS[11%colorLen]),
+  'm': (26+LIGHTSHIFT, COLORS[12%colorLen]),
+  'n': (24+LIGHTSHIFT, RED),                # COLORS[13%colorLen]
+  'o': (22+LIGHTSHIFT, COLORS[14%colorLen]),
+  'p': (20+LIGHTSHIFT, COLORS[15%colorLen]),
+  'q': (18+LIGHTSHIFT, COLORS[16%colorLen]),
+  'r': (16+LIGHTSHIFT, TURQUOISE),          # COLORS[17%colorLen]
   's': (0+LIGHTSHIFT, COLORS[18%colorLen]),
   't': (2+LIGHTSHIFT, COLORS[19%colorLen]),
   'u': (4+LIGHTSHIFT, BLUE),                # COLORS[20%colorLen]
   'v': (6+LIGHTSHIFT, COLORS[21%colorLen]),
   'w': (8+LIGHTSHIFT, COLORS[22%colorLen]),
-  'x': (10+LIGHTSHIFT, COLORS[23%colorLen]),
+  'x': (9+LIGHTSHIFT, COLORS[23%colorLen]),
   'y': (11+LIGHTSHIFT, COLORS[24%colorLen]),
-  'z': (12+LIGHTSHIFT, COLORS[25%colorLen]),
+  'z': (13+LIGHTSHIFT, COLORS[25%colorLen]),
   }
   return letterPosColor[letter]
   
@@ -291,10 +291,7 @@ def realRainbow():
     lightOneUp(.05)
   turnOffLights()
   
-  
-  
-  
-
+"""  
 # Work in Progress
 def meantimeLooper():
   while textID == request.args.getlist('SmsMessageSid'):
@@ -306,11 +303,13 @@ def meantimeLooper():
     else:
       demoEasterEgg()
     time.sleep(5)
-
+"""
   
 if __name__ == "__main__":
   # Create NeoPixel object with appropriate configuration
   strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
   # Initialize the library (must be called once before other functions)
   strip.begin()
+  rainbowOn(.01)
+  turnOffLights()
   app.run()
