@@ -9,8 +9,6 @@ TODO:
   Scary While Loop
 """
 
-
-
 app = Flask(__name__)
 
 # Start random seed
@@ -49,20 +47,20 @@ lines          = [list(range(33,50)),list(reversed(range(15,32))), list(range(0,
 textID         = []  # Attempting to use unique text IDs to perform a while loop. Still in progress  
 
 friendNumberMap = {
-  '+13603493405': 'get steve a drink',      # Steve
-  '+18182697821': 'haha layla',             # Layla
-  '+13233636062': 'thats gross zach',       # Zach
-  '+13233957777': 'brian do a handstand',   # Brian
-  '+18183954507': 'xxxander',               # Xander
-  '+19734627230': 'dale is that u',         # Dale
-  '+18598015371': 'luke im ur father',      # Luke
-  '+18185171872': 'paging dr josh',         # Josh
-  '+18184150822': 'donniel was here',       # Donniel
-  '+13107966370': 'jesses mom',             # Jesse
-  '+12134402061': 'heidi great costume',    # Heidi
-  '+18312279072': 'broghs where is deck',   # Broghan
-  '+16262789351': 'thats interesting peter',# Peter
-  '+13104220384': 'sophie just dance'       # Sophie 
+  STEVE_NUM  : 'get steve a drink',      
+  LAYLA_NUM  : 'haha layla',             
+  ZACH_NUM   : 'thats gross zach',      
+  BRIAN_NUM  : 'brian do a handstand',   
+  XANDER_NUM : 'xxxander',               
+  DALE_NUM   : 'dale is that u',         
+  LUKE_NUM   : 'luke im ur father',      
+  JOSH_NUM   : 'paging dr josh',         
+  DONNIEL_NUM: 'donniel was here',       
+  JESSE_NUM  : 'jesses mom',             
+  HEIDI_NUM  : 'heidi great costume',    
+  BROGHAN_NUM: 'broghs where is deck',   
+  PETER_NUM  : 'thats interesting peter',
+  SOPHIE_NUM : 'sophie just dance'       
   }
 
 @app.route("/")
@@ -320,27 +318,27 @@ def meantimeLooper():
 """
 
 # TODO: Finish rain 
-def rain():
-  offset0   = (len(lines[1])-len(lines[0]))
-  offset2   = (len(lines[1])-len(lines[2]))
-  maxLen    = max(len(lines[0]),len(lines[1]),len(lines[2]))
+# def rain():
+#   offset0   = (len(lines[1])-len(lines[0]))
+#   offset2   = (len(lines[1])-len(lines[2]))
+#   maxLen    = max(len(lines[0]),len(lines[1]),len(lines[2]))
   
-  for i in range(0,xxx):
-    # Generate random rain pixels to be raindrops
-    strip.setPixelColor(lines[0][$$$$$$random],BLUE)
+#   for i in range(0,xxx):
+#     # Generate random rain pixels to be raindrops
+#     strip.setPixelColor(lines[0][$$$$$$random],BLUE)
 
-    # Each Line checks if there are blue pixels above
-    for led in range(LED_COUNT):
-      if strip.getPixelColor(led) = BLUE:
-        if led in lines[0]:
-          strip.setPixelColor(lines[1][])
+#     # Each Line checks if there are blue pixels above
+#     for led in range(LED_COUNT):
+#       if strip.getPixelColor(led) = BLUE:
+#         if led in lines[0]:
+#           strip.setPixelColor(lines[1][])
 
 
-    if len(lines[2]) >= len(lines[1])-i:
-      strip.setPixelColor(lines[2][i-offset2],rainbowColors[i])
+#     if len(lines[2]) >= len(lines[1])-i:
+#       strip.setPixelColor(lines[2][i-offset2],rainbowColors[i])
     
-    lightOneUp(.05)
-  turnOffLights()
+#     lightOneUp(.05)
+#   turnOffLights()
 
 def barb():
   for i in range(50):
