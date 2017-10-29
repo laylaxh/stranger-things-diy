@@ -1,4 +1,4 @@
-import code, string, time, random, re
+import code, string, time, random, re, friend_nums
 from flask import Flask
 from flask import request
 from neopixel import *
