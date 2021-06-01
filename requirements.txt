@@ -20,7 +20,7 @@ requests==2.18.4
 six==1.10.0
 stevedore==1.26.0
 twilio==6.6.2
-urllib3==1.22
+urllib3==1.26.5
 virtualenv==15.1.0
 virtualenv-clone==0.2.6
 virtualenvwrapper==4.8.1
